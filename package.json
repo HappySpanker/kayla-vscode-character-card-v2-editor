@@ -17,7 +17,32 @@
         "command": "vscode-character-card-v2-editor.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "v2-editor",
+          "title": "Character card V2 editor",
+          "icon": "assets/character-card-v2-editor-view-container.svg"
+        }
+      ]
+    },
+    "views": {
+      "v2-editor": [
+        {
+          "id": "v2-editor:cards",
+          "name": "Cards"
+        },
+        {
+          "id": "v2-editor:json",
+          "name": "JSON"
+        },
+        {
+          "id": "v2-editor:lorebooks",
+          "name": "Lorebooks"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
