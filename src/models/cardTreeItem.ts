@@ -11,6 +11,7 @@ export class CardTreeItem extends vscode.TreeItem {
         super(card.Name);
 
         this.id = card.Uri.toString(true);
+        this.resourceUri = card.Uri;
     }
     
 }
