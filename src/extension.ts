@@ -1,18 +1,18 @@
 import * as vscode from 'vscode';
-import { CardPngTreeDataProvider } from './providers/cardPngTreeDataProvider';
-import { CardJsonTreeDataProvider } from './providers/cardJsonTreeDataProvider';
+import { CardTreeDataProvider } from './providers/cardTreeDataProvider';
 import { LorebookTreeDataProvider } from './providers/lorebookTreeDataProvider';
-import { CardJsonStore } from './stores/cardJsonStore';
+import { CardStore } from './stores/cardStore';
 
 export function activate(context: vscode.ExtensionContext) {
 	
 	// Build graph
-	const cardJsonStore = new CardJsonStore();
-	const cardJsonTreeDataProvider = new CardJsonTreeDataProvider(cardJsonStore);
+	const cardStore = new CardStore();
+	const cardTreeDataProvider = new CardTreeDataProvider(cardStore);
 
-	vscode.window.registerTreeDataProvider("v2-editor:cardJson", cardJsonTreeDataProvider);
-	vscode.window.registerTreeDataProvider("v2-editor:cardPng", new CardPngTreeDataProvider());
-	vscode.window.registerTreeDataProvider("v2-editor:lorebook", new LorebookTreeDataProvider());
+	const lorebookTreeDataProvider = new LorebookTreeDataProvider();
+
+	vscode.window.registerTreeDataProvider("v2-editor:cards", cardTreeDataProvider);
+	vscode.window.registerTreeDataProvider("v2-editor:lorebooks", lorebookTreeDataProvider);
 }
 
 export function deactivate() {}

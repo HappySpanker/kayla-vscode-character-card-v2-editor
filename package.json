@@ -30,15 +30,11 @@
     "views": {
       "v2-editor": [
         {
-          "id": "v2-editor:cardPng",
-          "name": "Cards: PNG"
+          "id": "v2-editor:cards",
+          "name": "Cards"
         },
         {
-          "id": "v2-editor:cardJson",
-          "name": "Cards: JSON"
-        },
-        {
-          "id": "v2-editor:lorebook",
+          "id": "v2-editor:lorebooks",
           "name": "Lorebooks"
         }
       ]
