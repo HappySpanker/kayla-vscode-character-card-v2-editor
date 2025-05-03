@@ -1,8 +1,11 @@
 import * as vscode from 'vscode';
 import { CardJsonTreeItem } from '../models/cardJsonTreeItem';
+import { JsonStore } from '../stores/interfaces/jsonStore';
 
 /* Handles calling stores to fill a UI TreeView for JSON cards */
 export class CardJsonTreeDataProvider implements vscode.TreeDataProvider<CardJsonTreeItem> {
+
+    constructor(private store : JsonStore<CardJsonTreeItem>) {}
 
     onDidChangeTreeData?: vscode.Event<void | CardJsonTreeItem | CardJsonTreeItem[] | null | undefined> | undefined;
 
@@ -11,9 +14,7 @@ export class CardJsonTreeDataProvider implements vscode.TreeDataProvider<CardJso
     }
 
     getChildren(element?: CardJsonTreeItem | undefined): vscode.ProviderResult<CardJsonTreeItem[]> {
-        return [
-            new CardJsonTreeItem("Sample card (JSON) TreeItem")
-        ];
+        return this.store.retrieve();
     }
 
     getParent?(element: CardJsonTreeItem): vscode.ProviderResult<CardJsonTreeItem> {
