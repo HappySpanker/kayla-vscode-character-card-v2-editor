@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CardTreeItem } from '../models/cardTreeItem';
-import { Store } from '../stores/interfaces/jsonStore';
+import { Store } from '../stores/interfaces/store';
 
 /* Handles calling stores to fill a UI TreeView for cards */
 export class CardTreeDataProvider implements vscode.TreeDataProvider<CardTreeItem> {
@@ -14,7 +14,7 @@ export class CardTreeDataProvider implements vscode.TreeDataProvider<CardTreeIte
     }
 
     getChildren(element?: CardTreeItem | undefined): vscode.ProviderResult<CardTreeItem[]> {
-        return this.store.retrieve();
+        return this.store.Retrieve();
     }
 
     getParent?(element: CardTreeItem): vscode.ProviderResult<CardTreeItem> {
