@@ -12,11 +12,15 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "vscode-character-card-v2-editor.helloWorld",
-        "title": "Hello World"
-      }
+		"customEditors": [
+			{
+				"viewType": "v2-editor:main",
+				"displayName": "Character card v2 editor",
+				"selector": [
+          { "filenamePattern": "*.json" },
+          { "filenamePattern": "*.png" }
+        ]
+			}
     ],
     "viewsContainers": {
       "activitybar": [

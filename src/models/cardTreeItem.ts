@@ -7,7 +7,7 @@ export class CardTreeItem extends vscode.TreeItem {
      * Builds up a CardTreeItem for the UI
      * @param card The Card core model to use
      */
-    constructor(card : Card) {
+    constructor(private card : Card) {
         super(card.Name);
 
         this.id = card.Uri.toString(true);
