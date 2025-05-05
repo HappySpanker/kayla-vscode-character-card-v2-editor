@@ -1,10 +1,10 @@
-import path from "path/posix";
-import { json, text } from "stream/consumers";
 import * as vscode from "vscode";
-import { workerData } from "worker_threads";
 import { AssetProvider } from "../../utilities/assetProvider";
 
 export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider {
+    
+    private document?: vscode.TextDocument = undefined;
+    private webviewPanel?: vscode.WebviewPanel = undefined;
 
     constructor(
         private assetProvider: AssetProvider
@@ -15,39 +15,57 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
         webviewPanel: vscode.WebviewPanel, 
         token: vscode.CancellationToken): Promise<void> {
 
-        // Not ideal; local function
-        function updateWebView() {
-            webviewPanel.webview.postMessage({
-                type: "update",
-                text: document.getText()
-            });
-        }
+        this.document = document;
+        this.webviewPanel = webviewPanel;
 
         webviewPanel.webview.options = {
             enableScripts: true
         };
 
         // Load from assets
-        webviewPanel.webview.html = await this.loadHtmlFromAsset();
+        webviewPanel.webview.html = 
+            await this.assetProvider.loadText("html/customCardEditor.html");
 
-        // Handle updates
+        // Handle updates from other TextDocument instances in the workspace
+        // TBD: dispose?
         const sub = vscode.workspace.onDidChangeTextDocument(
             (event) => {
                 if (event.document.uri.toString() == document.uri.toString()) {
-                    updateWebView();
+                    this.updateWebView();
                 }
             }
         )
 
         // Initial refresh
-        updateWebView();
+        this.updateWebView();
     }
 
     /**
-     * Handles loading HTML
-     * @returns A Promise<string> with HTML
+     * Handles parsing the current TextDocument as a valid TavernCardV2 type
      */
-    private async loadHtmlFromAsset() : Promise<string> {
-        return await this.assetProvider.loadText("html/customCardEditor.html");
+    private async parseTextDocumentAsJson() : Promise<any> {
+        if (this.document === undefined) {
+            throw new Error("Local document of CustomCardEditorProvider in undefined; should be set in resolveCustomTextEditor!");
+        }
+
+        // For JSON files; just feed the whole JSON to the WebView
+        return Promise.resolve(
+            JSON.parse(this.document.getText())
+        );
+    }
+
+    /**
+     * Handles sending udpates to the WebView
+     */
+    private async updateWebView() : Promise<void> {
+        if (this.webviewPanel === undefined) {
+            throw new Error("Local webViewPanel of CustomCardEditorProvider in undefined; should be set in resolveCustomTextEditor!");
+        }
+
+        // Send a message with the card to the WebView as an update
+        this.webviewPanel.webview.postMessage({
+            type: "update",
+            card: await this.parseTextDocumentAsJson()
+        })
     }
 }

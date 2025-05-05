@@ -5,19 +5,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character card V2 editor</title>
+    <style>
+        input, textarea {
+            background: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+        }
+
+        div.card-grid {
+            display: grid; 
+            grid-auto-rows: auto; 
+            grid-template-columns: max-content 1fr; 
+            gap: 1em;
+            align-items: baseline;
+        }
+
+        div.card-grid textarea {
+            padding: 0.32em;
+            border-style: inset;
+            resize: vertical;
+        }
+
+        div.card-grid input {
+            padding: 0.32em;
+            border-style: inset;
+        }
+    </style>
 </head>
 
 <body>
 
-    <div>
-        <label for="name">Name:</label>
-        <input id="name" data-binding="data.name" type="text" />
+    <div class="card-grid">
+        <label for="data.name">Name:</label>
+        <input id="data.name" data-binding="data.name" type="text" />
+
+        <label for="data.description">Description</label>
+        <textarea id="data.description" data-binding="data.description"></textarea>
+
+        <label for="data.scenario">Scenario</label>
+        <input id="data.scenario" data-binding="data.scenario" type="text" />
+
+        <label for="data.first_mes">First message</label>
+        <textarea id="data.first_mes" data-binding="data.first_mes"></textarea>
     </div>
 
-    <div>
-        <label for="card-data-description">Description</label>
-        <textarea name="description" id="card-data-description" data-binding="data.description"></textarea>
-    </div>
+    <script>
+        const vscode = acquireVsCodeApi();
+
+        // Updates a single binding
+        const updateBinding = function(
+            bindingName,
+            newValue
+        ) {
+            // Find by named data-binding
+            var bindingElement = document.querySelector(`[data-binding = '${bindingName}']`);
+
+            // Assign where possible
+            if (bindingElement instanceof HTMLInputElement
+                || bindingElement instanceof HTMLTextAreaElement) {
+                bindingElement.value = newValue;
+            } else {
+                console.warn(`Unable to bind to an element of type ${typeof bindingElement}`);
+            }
+        }
+
+        // Updates all the bindings
+        const updateBindings = function(card) {
+            updateBinding("data.name", card.data.name);
+            updateBinding("data.description", card.data.description);
+            updateBinding("data.scenario", card.data.scenario);
+            updateBinding("data.first_mes", card.data.first_mes);
+        }
+
+        // Updates the view based on the received card from the vscode extension
+        const updateView = function(card) {
+            updateBindings(card);
+
+            // Set the latest state
+            vscode.setState(card);
+        }
+
+        // Handle messages from the extension
+        window.addEventListener(
+            "message", 
+            (event) => {
+                // Use type from extension
+                let type = event.data.type;
+                switch (type) {
+                    case "update":
+                        updateView(event.data.card);
+                        break;
+                    default:
+                        console.warn(`Unknown type: ${type} received`);
+                        break;
+                }
+            }
+        )
+
+        // Check previous states
+        let previousState = vscode.getState();
+        if (previousState) { // If not falsy; assume previous state was found
+            updateView(previousState);
+        }
+
+    </script>
 
 </body>
 
