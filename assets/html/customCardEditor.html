@@ -36,16 +36,29 @@
 
     <div class="card-grid">
         <label for="data.name">Name:</label>
-        <input id="data.name" data-binding="data.name" type="text" />
+        <textarea id="data.name" data-binding="data.name"></textarea>
 
         <label for="data.description">Description</label>
         <textarea id="data.description" data-binding="data.description"></textarea>
 
         <label for="data.scenario">Scenario</label>
-        <input id="data.scenario" data-binding="data.scenario" type="text" />
+        <textarea id="data.scenario" data-binding="data.scenario"></textarea>
 
         <label for="data.first_mes">First message</label>
         <textarea id="data.first_mes" data-binding="data.first_mes"></textarea>
+
+        <label for="data.mes_example">Mes example</label>
+        <textarea id="data.mes_example" data-binding="data.mes_example"></textarea>
+
+        <label for="data.creator_notes">Creator notes</label>
+        <textarea id="data.creator_notes" data-binding="data.creator_notes"></textarea>
+
+        <label for="data.system_prompt">System prompt</label>
+        <textarea id="data.system_prompt" data-binding="data.system_prompt"></textarea>
+
+        <label for="data.post_history_instructions">Post history instructions</label>
+        <textarea id="data.post_history_instructions" data-binding="data.post_history_instructions"></textarea>
+
     </div>
 
     <script>
@@ -60,9 +73,9 @@
             var bindingElement = document.querySelector(`[data-binding = '${bindingName}']`);
 
             // Assign where possible
-            if (bindingElement instanceof HTMLInputElement
-                || bindingElement instanceof HTMLTextAreaElement) {
+            if (bindingElement instanceof HTMLTextAreaElement) {
                 bindingElement.value = newValue;
+                resizeTextarea(bindingElement);
             } else {
                 console.warn(`Unable to bind to an element of type ${typeof bindingElement}`);
             }
@@ -74,6 +87,10 @@
             updateBinding("data.description", card.data.description);
             updateBinding("data.scenario", card.data.scenario);
             updateBinding("data.first_mes", card.data.first_mes);
+            updateBinding("data.mes_example", card.data.mes_example);
+            updateBinding("data.creator_notes", card.data.creator_notes);
+            updateBinding("data.system_prompt", card.data.system_prompt);
+            updateBinding("data.post_history_instructions", card.data.post_history_instructions);
         }
 
         // Updates the view based on the received card from the vscode extension
@@ -83,6 +100,20 @@
             // Set the latest state
             vscode.setState(card);
         }
+
+        // Handles the resizing of a textare to match it's content size
+        const resizeTextarea = function(element) {
+            if (element.scrollHeight != element.clientHeight) {
+                element.style.height = `${element.scrollHeight}px`;
+            }
+        }
+
+        const bindingElements = document.querySelectorAll("[data-binding]");
+        bindingElements.forEach(elem => {
+            elem.addEventListener("input", () => {
+                resizeTextarea(elem);
+            })
+        })
 
         // Handle messages from the extension
         window.addEventListener(
