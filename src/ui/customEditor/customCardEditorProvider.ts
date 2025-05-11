@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AssetProvider } from "../../utilities/assetProvider";
+import { CardStore } from "../../stores/cardStore";
 
 export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider {
     
@@ -7,7 +8,8 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
     private webviewPanel?: vscode.WebviewPanel = undefined;
 
     constructor(
-        private assetProvider: AssetProvider
+        private assetProvider: AssetProvider,
+        private cardStore: CardStore
     ) {}
 
     public async resolveCustomTextEditor(
@@ -38,7 +40,7 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
 
         // Handle updates from the webView
         const webViewMsgSub = 
-            webviewPanel.webview.onDidReceiveMessage(this.handleReceiveMessage);
+            webviewPanel.webview.onDidReceiveMessage(this.handleReceiveMessage, this);
 
         // Initial refresh
         this.updateWebView();
@@ -70,10 +72,32 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
         this.webviewPanel.webview.postMessage({
             type: "update",
             card: await this.parseTextDocumentAsJson()
-        })
+        });
     }
 
+    /**
+     * Handles messages posted back to the extension from the webview
+     * @param message The message from the webview
+     */
     private handleReceiveMessage(message: any) : void {
-        console.debug(message);
+        if (!this.document) {
+            throw new Error("Document not set!");
+        }
+
+        let type = message?.type;
+
+        if (!type) {
+            console.warn(`Receive invalid message from from webview: ${message}`);
+            return;
+        }
+
+        switch (type) {
+            case "Update":
+                this.cardStore.SafeUpdate(this.document, message.card);
+                break;
+            default:
+                console.warn(`Unable to handle message of type '${type}'`);
+                break;
+        }
     }
 }

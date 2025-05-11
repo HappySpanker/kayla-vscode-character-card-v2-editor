@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.window.registerTreeDataProvider("v2-editor:cards", cardTreeDataProvider);
 	vscode.window.registerTreeDataProvider("v2-editor:lorebooks", lorebookTreeDataProvider);
-	vscode.window.registerCustomEditorProvider("v2-editor:main", new CustomCardEditorProvider(assetProvider));
+	vscode.window.registerCustomEditorProvider("v2-editor:main", new CustomCardEditorProvider(assetProvider, cardStore));
 }
 
 export function deactivate() {}

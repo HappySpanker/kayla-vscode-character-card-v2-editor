@@ -129,7 +129,7 @@
                     resizeTextarea(elem);
                 })
                 elem.addEventListener("input", (event) => {
-                    sendMessageToExtension("hello, world!");
+                    debouncedSaveTavernCardV2();
                 });
             })
 
@@ -151,18 +151,33 @@
             )
 
             // Handle message to the extenion
-            const sendMessageToExtension = debounce((msg) => {
-                vscode.postMessage(msg);
+            const debouncedSaveTavernCardV2 = debounce((msg) => {
+                vscode.postMessage({
+                    type: "Update",
+                    card: rebuildTavenCardV2()
+                });
             });
 
-            // setTimeout(() => {
-            //     console.log("calling extension");
-            //     vscode.postMessage({
-            //         type: "hello",
-            //         data: "world!"
-            //     });
-            //     window
-            // }, 5000);
+            // Used to rebuild a TavernCardV2 from all the fields in the webview
+            const rebuildTavenCardV2 = function () {
+                return {
+                    data: {
+                        name: rebuildTavenCardV2ByField("data.name"),
+                        description: rebuildTavenCardV2ByField("data.description"),
+                        scenario: rebuildTavenCardV2ByField("data.scenario"),
+                        first_mes: rebuildTavenCardV2ByField("data.first_mes"),
+                        mes_example: rebuildTavenCardV2ByField("data.mes_example"),
+                        creator_notes: rebuildTavenCardV2ByField("data.creator_notes"),
+                        system_prompt: rebuildTavenCardV2ByField("data.system_prompt"),
+                        post_history_instructions: rebuildTavenCardV2ByField("data.post_history_instructions")
+                    }
+                }
+            }
+
+            // Retrieve the value of the individual fields from the webview
+            const rebuildTavenCardV2ByField = function (dataBindingName) {
+                return document.querySelector(`[data-binding = '${dataBindingName}']`).value;
+            }
 
             // Check previous states
             let previousState = vscode.getState();
