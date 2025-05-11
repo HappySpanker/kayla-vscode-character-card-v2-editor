@@ -6,15 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character card V2 editor</title>
     <style>
-        input, textarea {
+        input,
+        textarea {
             background: var(--vscode-input-background);
             color: var(--vscode-input-foreground);
         }
 
         div.card-grid {
-            display: grid; 
-            grid-auto-rows: auto; 
-            grid-template-columns: max-content 1fr; 
+            display: grid;
+            grid-auto-rows: auto;
+            grid-template-columns: max-content 1fr;
             gap: 1em;
             align-items: baseline;
         }
@@ -62,81 +63,113 @@
     </div>
 
     <script>
-        const vscode = acquireVsCodeApi();
+        (function () {
+            const vscode = acquireVsCodeApi();
 
-        // Updates a single binding
-        const updateBinding = function(
-            bindingName,
-            newValue
-        ) {
-            // Find by named data-binding
-            var bindingElement = document.querySelector(`[data-binding = '${bindingName}']`);
+            // Debouncer
+            const debounce = function(func, timeout = 333) {
+                let timer;
 
-            // Assign where possible
-            if (bindingElement instanceof HTMLTextAreaElement) {
-                bindingElement.value = newValue;
-                resizeTextarea(bindingElement);
-            } else {
-                console.warn(`Unable to bind to an element of type ${typeof bindingElement}`);
-            }
-        }
-
-        // Updates all the bindings
-        const updateBindings = function(card) {
-            updateBinding("data.name", card.data.name);
-            updateBinding("data.description", card.data.description);
-            updateBinding("data.scenario", card.data.scenario);
-            updateBinding("data.first_mes", card.data.first_mes);
-            updateBinding("data.mes_example", card.data.mes_example);
-            updateBinding("data.creator_notes", card.data.creator_notes);
-            updateBinding("data.system_prompt", card.data.system_prompt);
-            updateBinding("data.post_history_instructions", card.data.post_history_instructions);
-        }
-
-        // Updates the view based on the received card from the vscode extension
-        const updateView = function(card) {
-            updateBindings(card);
-
-            // Set the latest state
-            vscode.setState(card);
-        }
-
-        // Handles the resizing of a textare to match it's content size
-        const resizeTextarea = function(element) {
-            if (element.scrollHeight != element.clientHeight) {
-                element.style.height = `${element.scrollHeight}px`;
-            }
-        }
-
-        const bindingElements = document.querySelectorAll("[data-binding]");
-        bindingElements.forEach(elem => {
-            elem.addEventListener("input", () => {
-                resizeTextarea(elem);
-            })
-        })
-
-        // Handle messages from the extension
-        window.addEventListener(
-            "message", 
-            (event) => {
-                // Use type from extension
-                let type = event.data.type;
-                switch (type) {
-                    case "update":
-                        updateView(event.data.card);
-                        break;
-                    default:
-                        console.warn(`Unknown type: ${type} received`);
-                        break;
+                return (...args) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        func.apply(this, args);
+                    }, timeout);
                 }
             }
-        )
 
-        // Check previous states
-        let previousState = vscode.getState();
-        if (previousState) { // If not falsy; assume previous state was found
-            updateView(previousState);
-        }
+            // Updates a single binding
+            const updateBinding = function (
+                bindingName,
+                newValue
+            ) {
+                // Find by named data-binding
+                var bindingElement = document.querySelector(`[data-binding = '${bindingName}']`);
+
+                // Assign where possible
+                if (bindingElement instanceof HTMLTextAreaElement) {
+                    bindingElement.value = newValue;
+                    resizeTextarea(bindingElement);
+                } else {
+                    console.warn(`Unable to bind to an element of type ${typeof bindingElement}`);
+                }
+            }
+
+            // Updates all the bindings
+            const updateBindings = function (card) {
+                updateBinding("data.name", card.data.name);
+                updateBinding("data.description", card.data.description);
+                updateBinding("data.scenario", card.data.scenario);
+                updateBinding("data.first_mes", card.data.first_mes);
+                updateBinding("data.mes_example", card.data.mes_example);
+                updateBinding("data.creator_notes", card.data.creator_notes);
+                updateBinding("data.system_prompt", card.data.system_prompt);
+                updateBinding("data.post_history_instructions", card.data.post_history_instructions);
+            }
+
+            // Updates the view based on the received card from the vscode extension
+            const updateView = function (card) {
+                updateBindings(card);
+
+                // Set the latest state
+                vscode.setState(card);
+            }
+
+            // Handles the resizing of a textare to match it's content size
+            const resizeTextarea = function (element) {
+                if (element.scrollHeight != element.clientHeight) {
+                    element.style.height = `${element.scrollHeight}px`;
+                }
+            }
+
+            // Attach event handlers to '[data-binding]' instances
+            const bindingElements = document.querySelectorAll("[data-binding]");
+            bindingElements.forEach(elem => {
+                elem.addEventListener("input", () => {
+                    resizeTextarea(elem);
+                })
+                elem.addEventListener("input", (event) => {
+                    sendMessageToExtension("hello, world!");
+                });
+            })
+
+            // Handle messages from the extension
+            window.addEventListener(
+                "message",
+                (event) => {
+                    // Use type from extension
+                    let type = event.data.type;
+                    switch (type) {
+                        case "update":
+                            updateView(event.data.card);
+                            break;
+                        default:
+                            console.warn(`Unknown type: ${type} received`);
+                            break;
+                    }
+                }
+            )
+
+            // Handle message to the extenion
+            const sendMessageToExtension = debounce((msg) => {
+                vscode.postMessage(msg);
+            });
+
+            // setTimeout(() => {
+            //     console.log("calling extension");
+            //     vscode.postMessage({
+            //         type: "hello",
+            //         data: "world!"
+            //     });
+            //     window
+            // }, 5000);
+
+            // Check previous states
+            let previousState = vscode.getState();
+            if (previousState) { // If not falsy; assume previous state was found
+                updateView(previousState);
+            }
+        }());
 
     </script>
 

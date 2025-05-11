@@ -30,11 +30,15 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
         // TBD: dispose?
         const sub = vscode.workspace.onDidChangeTextDocument(
             (event) => {
-                if (event.document.uri.toString() == document.uri.toString()) {
+                if (event.document.uri.toString() === document.uri.toString()) {
                     this.updateWebView();
                 }
             }
-        )
+        );
+
+        // Handle updates from the webView
+        const webViewMsgSub = 
+            webviewPanel.webview.onDidReceiveMessage(this.handleReceiveMessage);
 
         // Initial refresh
         this.updateWebView();
@@ -67,5 +71,9 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
             type: "update",
             card: await this.parseTextDocumentAsJson()
         })
+    }
+
+    private handleReceiveMessage(message: any) : void {
+        console.debug(message);
     }
 }
