@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { AssetProvider } from "../../utilities/assetProvider";
 import { CardStore } from "../../stores/cardStore";
+import { WebViewMessage } from "../../models/messages/webViewMessage";
 
 export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider {
     
@@ -40,7 +41,7 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
 
         // Handle updates from the webView
         const webViewMsgSub = 
-            webviewPanel.webview.onDidReceiveMessage(this.handleReceiveMessage, this);
+            webviewPanel.webview.onDidReceiveMessage(await this.handleReceiveMessage, this);
 
         // Initial refresh
         this.updateWebView();
@@ -79,7 +80,7 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
      * Handles messages posted back to the extension from the webview
      * @param message The message from the webview
      */
-    private handleReceiveMessage(message: any) : void {
+    private async handleReceiveMessage(message: WebViewMessage) : Promise<void> {
         if (!this.document) {
             throw new Error("Document not set!");
         }
@@ -93,7 +94,7 @@ export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider
 
         switch (type) {
             case "Update":
-                this.cardStore.SafeUpdate(this.document, message.card);
+                await this.cardStore.SafeUpdate(this.document, message.card);
                 break;
             default:
                 console.warn(`Unable to handle message of type '${type}'`);
