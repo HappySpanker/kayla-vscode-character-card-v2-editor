@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { Card } from "../models/core/card";
-import { TavernCardV2 } from '../models/core/spec';
+import { Card } from "../../900.shared/models/core/card";
+import { TavernCardV2 } from '../../900.shared/models/core/spec';
 
 export class CardRepository {
 
@@ -10,7 +10,7 @@ export class CardRepository {
      */
     public List() : Thenable<Card[]> {
         return vscode.workspace.findFiles("**/*.{json,png}")
-            .then(uris => uris.map(uri => new Card(uri))) // For now, ignore subdirectories
+            .then(uris => uris.map(uri => new Card(uri))); // For now, ignore subdirectories
     }
 
     /**

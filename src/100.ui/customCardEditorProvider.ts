@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { AssetProvider } from "../../utilities/assetProvider";
 import { CardStore } from "../../stores/cardStore";
-import { WebViewMessage } from "../../models/messages/webViewMessage";
+import { WebViewMessage } from "../../900.shared/models/messages/webViewMessage";
 
 export class CustomCardEditorProvider implements vscode.CustomTextEditorProvider {
     

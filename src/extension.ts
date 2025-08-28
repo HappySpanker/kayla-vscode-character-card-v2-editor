@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { CardTreeDataProvider } from './providers/cardTreeDataProvider';
-import { LorebookTreeDataProvider } from './providers/lorebookTreeDataProvider';
-import { CardStore } from './stores/cardStore';
-import { CardRepository } from './repositories/cardRepository';
-import { CustomCardEditorProvider } from './ui/customEditor/customCardEditorProvider';
-import { AssetProvider } from './utilities/assetProvider';
+import { CardTreeDataProvider } from './100.ui/providers/cardTreeDataProvider';
+import { LorebookTreeDataProvider } from './100.ui/providers/lorebookTreeDataProvider';
+import { CardStore } from './200.logic/stores/cardStore';
+import { CardRepository } from './300.persistence/repositories/cardRepository';
+import { CustomCardEditorProvider } from './100.ui/customCardEditorProvider';
+import { AssetProvider } from './901.utils/assetProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 	

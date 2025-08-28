@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import * as vscode from 'vscode';
 import { Card } from './core/card';
 
 export class CardTreeItem extends vscode.TreeItem {

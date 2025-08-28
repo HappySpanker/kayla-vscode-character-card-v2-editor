@@ -1,5 +1,5 @@
-import * as vscode from 'vscode'
-import { LorebookTreeItem } from '../models/lorebookTreeItem';
+import * as vscode from 'vscode';
+import { LorebookTreeItem } from '../../900.shared/models/lorebookTreeItem';
 
 /* Handles calling stores to fill a UI TreeView for lorebooks */
 export class LorebookTreeDataProvider implements vscode.TreeDataProvider<LorebookTreeItem> {

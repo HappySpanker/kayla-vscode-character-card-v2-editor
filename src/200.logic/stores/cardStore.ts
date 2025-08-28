@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { CardTreeItem } from "../models/cardTreeItem";
-import { CardRepository } from "../repositories/cardRepository";
+import { CardTreeItem } from "../../900.shared/models/cardTreeItem";
+import { CardRepository } from "../../300.persistence/repositories/cardRepository";
 import { Store } from "./interfaces/store";
-import { TavernCardV2 } from '../models/core/spec';
+import { TavernCardV2 } from '../../900.shared/models/core/spec';
 
 export class CardStore implements Store<CardTreeItem> {
 

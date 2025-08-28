@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { CardTreeItem } from '../models/cardTreeItem';
-import { Store } from '../stores/interfaces/store';
+import { CardTreeItem } from '../../900.shared/models/cardTreeItem';
+import { Store } from '../../200.logic/stores/interfaces/store';
 
 /* Handles calling stores to fill a UI TreeView for cards */
 export class CardTreeDataProvider implements vscode.TreeDataProvider<CardTreeItem> {
